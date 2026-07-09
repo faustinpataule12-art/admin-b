@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>DEV.NPS.NELSON — Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#07070d; --panel:#0f1120; --panel2:#141730; --border:#232750;
+  --cyan:#22d3ee; --violet:#8b5cf6; --magenta:#f472b6; --green:#22c55e;
+  --red:#f87171; --orange:#fb923c; --text:#e8ebff; --muted:#8b93b8;
+}
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--bg); color:var(--text);
+  font-family:'Rajdhani',sans-serif; font-size:15px;
+  background-image:
+    radial-gradient(circle at 15% 8%, rgba(139,92,246,.14), transparent 40%),
+    radial-gradient(circle at 90% 15%, rgba(34,211,238,.12), transparent 40%);
+  padding-bottom:40px;
+}
+h1,h2,h3,.orb{font-family:'Orbitron',sans-serif}
+header{
+  padding:22px 18px 16px; border-bottom:1px solid var(--border);
+  display:flex; align-items:center; justify-content:space-between;
+}
+header h1{
+  font-size:19px; margin:0; letter-spacing:2px; font-weight:900;
+  background:linear-gradient(90deg,var(--cyan),var(--violet),var(--magenta));
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+}
+header .sub{font-size:10px;color:var(--muted);letter-spacing:3px;margin-top:2px}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.wrap{max-width:720px;margin:0 auto;padding:16px}
+.card{
+  background:linear-gradient(180deg,var(--panel),var(--panel2));
+  border:1px solid var(--border); border-radius:16px;
+  padding:18px; margin-bottom:16px; position:relative; overflow:hidden;
+}
+.card::before{
+  content:''; position:absolute; top:0; left:0; right:0; height:2px;
+  background:linear-gradient(90deg,var(--cyan),var(--violet),var(--magenta));
+}
+.card-title{
+  font-family:'Orbitron',sans-serif; font-size:12px; letter-spacing:2px;
+  color:var(--cyan); margin-bottom:14px; display:flex; align-items:center; gap:8px;
+}
+label{display:block; font-size:11px; letter-spacing:1.5px; color:var(--muted); margin-bottom:6px; text-transform:uppercase}
+input[type=text], input[type=password], input[type=url], textarea{
+  width:100%; background:#0a0c1c; border:1px solid var(--border); border-radius:10px;
+  padding:12px 14px; color:var(--text); font-family:'Rajdhani',sans-serif; font-size:15px;
+  margin-bottom:14px; outline:none;
+}
+input:focus, textarea:focus{border-color:var(--cyan); box-shadow:0 0 0 3px rgba(34,211,238,.15)}
+textarea{resize:vertical; min-height:70px}
+.row{display:flex; gap:10px}
+.row > *{flex:1}
+.btn{
+  border:none; border-radius:10px; padding:13px; font-family:'Orbitron',sans-serif;
+  font-size:12px; letter-spacing:1.5px; font-weight:700; cursor:pointer; width:100%;
+  display:flex; align-items:center; justify-content:center; gap:8px;
+}
+.btn-main{background:linear-gradient(135deg,var(--cyan),var(--violet)); color:#04040a}
+.btn-ghost{background:transparent; border:1px solid var(--border); color:var(--muted)}
+.btn-danger{background:transparent; border:1px solid rgba(248,113,113,.4); color:var(--red)}
+.btn-sm{padding:8px 12px; font-size:10px; width:auto}
+.upload-zone{
+  border:2px dashed var(--border); border-radius:12px; padding:18px; text-align:center;
+  color:var(--muted); font-size:12px; cursor:pointer; margin-bottom:12px;
+}
+.upload-zone:active{border-color:var(--cyan)}
+.thumbs{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px}
+.thumb{position:relative; width:72px; height:72px; border-radius:10px; overflow:hidden; border:1px solid var(--border)}
+.thumb img, .thumb video{width:100%; height:100%; object-fit:cover}
+.thumb .rm{
+  position:absolute; top:2px; right:2px; width:20px; height:20px; border-radius:50%;
+  background:rgba(0,0,0,.75); color:var(--red); display:flex; align-items:center; justify-content:center;
+  font-size:12px; border:1px solid var(--red);
+}
+.thumb .badge{
+  position:absolute; bottom:2px; left:2px; font-size:8px; background:rgba(0,0,0,.7);
+  padding:1px 5px; border-radius:4px; color:var(--cyan); letter-spacing:1px;
+}
+.warn-size{font-size:11px; color:var(--orange); margin:-6px 0 12px}
+.term{
+  background:#000; border:1px solid var(--border); border-radius:10px; padding:12px;
+  font-family:monospace; font-size:11px; max-height:180px; overflow-y:auto; line-height:1.6;
+}
+.term .i{color:#7dd3fc} .term .s{color:var(--green)} .term .w{color:var(--orange)} .term .e{color:var(--red)}
+.toast{
+  position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:#111;
+  border:1px solid var(--cyan); color:var(--text); padding:10px 18px; border-radius:10px;
+  font-size:13px; z-index:999; opacity:0; transition:opacity .3s; pointer-events:none;
+}
+.toast.show{opacity:1}
+.status-line{font-size:11px; color:var(--muted); margin-top:10px; display:flex; justify-content:space-between}
+.divider{height:1px; background:var(--border); margin:16px 0}
+.current-item{
+  display:flex; align-items:center; gap:10px; background:#0a0c1c; border:1px solid var(--border);
+  border-radius:10px; padding:8px 10px; margin-bottom:8px; font-size:12px;
+}
+.current-item img, .current-item video{width:40px; height:40px; object-fit:cover; border-radius:6px}
+.current-item .txt{flex:1; color:var(--muted); overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.current-item{position:relative}
+.nav-tab{
+  flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;
+  padding:10px 0; color:var(--muted); cursor:pointer;
+}
+.nav-tab.active{color:var(--cyan)}
+.nav-tab.active div:first-child{filter:drop-shadow(0 0 6px rgba(34,211,238,.6))}
+.del-btn{
+  width:26px; height:26px; border-radius:50%; background:rgba(248,113,113,.15);
+  border:1px solid var(--red); color:var(--red); align-items:center; justify-content:center;
+  font-size:13px; flex-shrink:0; cursor:pointer;
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════
+     VERROU PIN — protege l'acces meme si
+     ce fichier venait a etre partage/extrait
+     ═══════════════════════════════════ -->
+<div id="pin-lock" style="position:fixed;inset:0;z-index:99999;background:#07070d;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px">
+  <div style="font-family:'Orbitron',sans-serif;font-size:20px;letter-spacing:2px;margin-bottom:6px;background:linear-gradient(90deg,#22d3ee,#8b5cf6);-webkit-background-clip:text;background-clip:text;color:transparent">DEV.NPS.NELSON</div>
+  <div style="font-size:11px;color:#8b93b8;letter-spacing:2px;margin-bottom:30px">ACCES RESTREINT</div>
+  <input type="password" id="pin-input" inputmode="numeric" maxlength="8" placeholder="Code PIN" autocomplete="off"
+    style="width:100%;max-width:260px;background:#0a0c1c;border:1px solid #232750;border-radius:10px;padding:14px;color:#e8ebff;font-size:20px;text-align:center;letter-spacing:6px;margin-bottom:14px;outline:none">
+  <button onclick="tryUnlock()" style="width:100%;max-width:260px;border:none;border-radius:10px;padding:13px;font-family:'Orbitron',sans-serif;font-size:12px;letter-spacing:1.5px;font-weight:700;background:linear-gradient(135deg,#22d3ee,#8b5cf6);color:#04040a">🔓 DEVERROUILLER</button>
+  <div id="pin-error" style="color:#f87171;font-size:12px;margin-top:14px;display:none">Code incorrect.</div>
+  <div id="pin-setup-msg" style="color:#8b93b8;font-size:11px;margin-top:20px;text-align:center;max-width:280px;display:none">
+    Premiere utilisation : choisis un code PIN maintenant. Il sera demande a chaque ouverture.
+  </div>
+</div>
+
+<header>
+  <div>
+    <h1>DEV.NPS.NELSON</h1>
+    <div class="sub">PANNEAU DE DIFFUSION</div>
+  </div>
+  <div style="display:flex;align-items:center;gap:8px">
+    <div class="dot" id="conn-dot"></div>
+    <span style="font-size:10px;color:var(--muted);letter-spacing:1px" id="conn-label">HORS LIGNE</span>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <!-- CONNEXION GITHUB (toujours visible) -->
+  <div class="card">
+    <div class="card-title">🔑 CONNEXION GITHUB</div>
+    <label>Token (scopes : repo)</label>
+    <input type="password" id="gh-token" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
+    <div class="row">
+      <div>
+        <label>Propriétaire</label>
+        <input type="text" id="gh-owner" placeholder="faustinpataule12-art" value="faustinpataule12-art">
+      </div>
+      <div>
+        <label>Dépôt</label>
+        <input type="text" id="gh-repo" placeholder="NPS.NELSON" value="NPS.NELSON">
+      </div>
+    </div>
+    <button class="btn btn-ghost" onclick="testConnection()">🔌 Tester la connexion</button>
+  </div>
+
+  <!-- ═══ SESSION 1 : PUBLICATIONS ═══ -->
+  <div class="tab-page" id="tab-publications">
+    <div class="card">
+      <div class="card-title">💬 PUBLICATIONS</div>
+      <label>Message</label>
+      <textarea id="aide-message" placeholder="Ex: Nouvelle mise a jour disponible !"></textarea>
+      <label>Images (optionnel, max 4)</label>
+      <div class="upload-zone" onclick="document.getElementById('aide-input').click()">
+        🖼️ Ajouter des images
+      </div>
+      <input type="file" id="aide-input" accept="image/*" multiple style="display:none" onchange="handleAideFiles(this.files)">
+      <div class="thumbs" id="aide-thumbs"></div>
+    </div>
+  </div>
+
+  <!-- ═══ SESSION 2 : ECRAN DE DEMARRAGE ═══ -->
+  <div class="tab-page" id="tab-splash" style="display:none">
+    <div class="card">
+      <div class="card-title">🚀 ÉCRAN DE DÉMARRAGE</div>
+      <div style="font-size:11px;color:var(--muted);margin-bottom:12px">
+        Photos ou courtes vidéos (~5 s) affichées en carrousel à l'ouverture de l'app. Ordre = ordre d'ajout.
+      </div>
+      <div class="upload-zone" onclick="document.getElementById('splash-input').click()">
+        📷 Ajouter photos / 🎬 vidéos (max 6 éléments)
+      </div>
+      <input type="file" id="splash-input" accept="image/*,video/*" multiple style="display:none" onchange="handleSplashFiles(this.files)">
+      <div class="thumbs" id="splash-thumbs"></div>
+      <div class="warn-size" id="splash-size-warn" style="display:none">⚠️ Une vidéo dépasse 3 Mo — risque d'échec à l'envoi. Compresse-la avant.</div>
+    </div>
+  </div>
+
+  <!-- ═══ SESSION 3 : LIENS (menu Aide) ═══ -->
+  <div class="tab-page" id="tab-liens" style="display:none">
+    <div class="card">
+      <div class="card-title">🔗 LIEN (MENU AIDE)</div>
+      <label>Lien affiché dans le menu Aide</label>
+      <input type="url" id="aide-link" placeholder="https://...">
+      <div style="font-size:11px;color:var(--muted)">Ce lien apparait sous forme de bouton dans le menu Aide de PWA-APK Studio.</div>
+    </div>
+  </div>
+
+  <!-- ═══ SESSION 4 : LIENS DE L'APPLICATION (hebergement) ═══ -->
+  <div class="tab-page" id="tab-app-liens" style="display:none">
+    <div class="card">
+      <div class="card-title">🌐 LIENS DE L'APPLICATION</div>
+      <div style="font-size:11px;color:var(--muted);margin-bottom:12px">
+        L'adresse ou est hebergee PWA-APK Studio. Si Netlify (ou un autre hebergeur) tombe en panne,
+        change ici l'adresse principale ou ajoute une adresse de secours — sans recompiler l'app.
+      </div>
+      <label>Adresse principale</label>
+      <input type="url" id="app-link-primary" placeholder="https://pwa-apk-studio.netlify.app">
+      <label>Adresse de secours (optionnel)</label>
+      <input type="url" id="app-link-backup" placeholder="https://tonpseudo.github.io/depot">
+    </div>
+  </div>
+
+  <!-- ACTIONS (toujours visible) -->
+  <div class="card">
+    <div class="card-title">📡 DIFFUSION</div>
+    <button class="btn btn-main" onclick="publish()" id="publish-btn">🚀 PUBLIER MAINTENANT</button>
+    <div style="height:10px"></div>
+    <button class="btn btn-danger" onclick="clearAll()">🗑️ Tout retirer (vider la diffusion)</button>
+    <div class="divider"></div>
+    <div class="term" id="term">
+      <div class="i">En attente d'action...</div>
+    </div>
+    <div class="status-line">
+      <span id="last-pub">Dernière publication : —</span>
+      <span id="repo-target">—</span>
+    </div>
+  </div>
+
+  <!-- CONTENU ACTUELLEMENT EN LIGNE (toujours visible) -->
+  <div class="card">
+    <div class="card-title">📶 ACTUELLEMENT EN LIGNE</div>
+    <div id="current-list" style="font-size:12px;color:var(--muted)">Charge la connexion pour voir l'etat actuel.</div>
+    <button class="btn btn-ghost" onclick="loadCurrent()" style="margin-top:10px">🔄 Rafraichir l'etat</button>
+  </div>
+
+  <div style="height:70px"></div>
+</div>
+
+<!-- NAVIGATION PAR ONGLETS (4 sessions) -->
+<div id="bottom-nav" style="position:fixed;bottom:0;left:0;right:0;background:#0a0c1c;border-top:1px solid var(--border);display:flex;z-index:500">
+  <div class="nav-tab active" data-tab="tab-publications" onclick="switchTab('tab-publications', this)">
+    <div style="font-size:18px">💬</div><div style="font-size:9px;letter-spacing:1px;margin-top:2px">PUBLI</div>
+  </div>
+  <div class="nav-tab" data-tab="tab-splash" onclick="switchTab('tab-splash', this)">
+    <div style="font-size:18px">🚀</div><div style="font-size:9px;letter-spacing:1px;margin-top:2px">SPLASH</div>
+  </div>
+  <div class="nav-tab" data-tab="tab-liens" onclick="switchTab('tab-liens', this)">
+    <div style="font-size:18px">🔗</div><div style="font-size:9px;letter-spacing:1px;margin-top:2px">LIEN</div>
+  </div>
+  <div class="nav-tab" data-tab="tab-app-liens" onclick="switchTab('tab-app-liens', this)">
+    <div style="font-size:18px">🌐</div><div style="font-size:9px;letter-spacing:1px;margin-top:2px">SITE</div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+var CONFIG_PATH = 'pwa-apk-studio-remote.json';
+var MAX_SIZE_WARN = 3 * 1024 * 1024; // 3 Mo
+
+var splashFiles = []; // {file, type, dataUrl}
+var aideFiles = [];   // {file, dataUrl}
+
+// ── VERROU PIN ──
+function hashPin(pin){
+  var h = 0;
+  for (var i = 0; i < pin.length; i++) { h = ((h << 5) - h + pin.charCodeAt(i)) | 0; }
+  return 'p' + h;
+}
+(function initPinLock(){
+  var stored = localStorage.getItem('dev_nps_pin_hash');
+  var input = document.getElementById('pin-input');
+  if (!stored) {
+    document.getElementById('pin-setup-msg').style.display = 'block';
+  }
+  input.addEventListener('keydown', function(e){ if (e.key === 'Enter') tryUnlock(); });
+  setTimeout(function(){ input.focus(); }, 300);
+})();
+
+function tryUnlock(){
+  var input = document.getElementById('pin-input');
+  var pin = input.value.trim();
+  if (pin.length < 4) {
+    document.getElementById('pin-error').textContent = 'Le code doit faire au moins 4 chiffres/caracteres.';
+    document.getElementById('pin-error').style.display = 'block';
+    return;
+  }
+  var stored = localStorage.getItem('dev_nps_pin_hash');
+  if (!stored) {
+    localStorage.setItem('dev_nps_pin_hash', hashPin(pin));
+    document.getElementById('pin-lock').style.display = 'none';
+    return;
+  }
+  if (hashPin(pin) === stored) {
+    document.getElementById('pin-lock').style.display = 'none';
+  } else {
+    document.getElementById('pin-error').textContent = 'Code incorrect.';
+    document.getElementById('pin-error').style.display = 'block';
+    input.value = '';
+    input.focus();
+  }
+}
+
+// ── NAVIGATION PAR ONGLETS ──
+function switchTab(tabId, el){
+  document.querySelectorAll('.tab-page').forEach(function(p){ p.style.display = 'none'; });
+  document.getElementById(tabId).style.display = 'block';
+  document.querySelectorAll('.nav-tab').forEach(function(t){ t.classList.remove('active'); });
+  el.classList.add('active');
+}
+
+// ── PERSISTANCE LOCALE DE LA CONFIG GITHUB ──
+(function loadSavedConfig(){
+  try{
+    var saved = JSON.parse(localStorage.getItem('dev_nps_gh_config') || 'null');
+    if(saved){
+      if(saved.token) document.getElementById('gh-token').value = saved.token;
+      if(saved.owner) document.getElementById('gh-owner').value = saved.owner;
+      if(saved.repo) document.getElementById('gh-repo').value = saved.repo;
+    }
+  }catch(e){}
+  // Sauvegarde automatique a chaque frappe, pour ne jamais avoir a retaper le token
+  ['gh-token','gh-owner','gh-repo'].forEach(function(id){
+    document.getElementById(id).addEventListener('input', saveConfig);
+  });
+})();
+
+function saveConfig(){
+  var cfg = {
+    token: document.getElementById('gh-token').value.trim(),
+    owner: document.getElementById('gh-owner').value.trim(),
+    repo: document.getElementById('gh-repo').value.trim()
+  };
+  try{ localStorage.setItem('dev_nps_gh_config', JSON.stringify(cfg)); }catch(e){}
+  return cfg;
+}
+
+function toast(msg){
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(function(){ t.classList.remove('show'); }, 2600);
+}
+
+function termLine(msg, cls){
+  var term = document.getElementById('term');
+  var line = document.createElement('div');
+  line.className = cls || '';
+  line.textContent = msg;
+  term.appendChild(line);
+  term.scrollTop = term.scrollHeight;
+}
+
+function clearTerm(){ document.getElementById('term').innerHTML = ''; }
+
+function setConn(ok){
+  document.getElementById('conn-dot').style.background = ok ? 'var(--green)' : 'var(--red)';
+  document.getElementById('conn-label').textContent = ok ? 'CONNECTE' : 'HORS LIGNE';
+}
+
+// ── HELPERS FICHIERS ──
+function fileToDataUrl(file){
+  return new Promise(function(resolve, reject){
+    var r = new FileReader();
+    r.onload = function(){ resolve(r.result); };
+    r.onerror = reject;
+    r.readAsDataURL(file);
+  });
+}
+function b64FromDataUrl(dataUrl){
+  var i = dataUrl.indexOf(',');
+  return i !== -1 ? dataUrl.slice(i + 1) : dataUrl;
+}
+
+// Redimensionne et compresse une image avant envoi, pour eviter les echecs
+// "Failed to fetch" causes par des photos trop lourdes sur reseau mobile.
+function compressImage(file, maxDim, quality){
+  maxDim = maxDim || 1080; quality = quality || 0.8;
+  return fileToDataUrl(file).then(function(dataUrl){
+    return new Promise(function(resolve){
+      var img = new Image();
+      img.onload = function(){
+        var w = img.width, h = img.height;
+        if (w > maxDim || h > maxDim) {
+          if (w > h) { h = Math.round(h * maxDim / w); w = maxDim; }
+          else { w = Math.round(w * maxDim / h); h = maxDim; }
+        }
+        var canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+        resolve(canvas.toDataURL('image/jpeg', quality));
+      };
+      img.onerror = function(){ resolve(dataUrl); };
+      img.src = dataUrl;
+    });
+  });
+}
+
+function handleSplashFiles(fileList){
+  var files = Array.prototype.slice.call(fileList);
+  var warnBig = false;
+  var chain = Promise.resolve();
+  files.forEach(function(file){
+    if (splashFiles.length >= 6) return;
+    var isVideo = file.type.indexOf('video') === 0;
+    if (isVideo && file.size > MAX_SIZE_WARN) warnBig = true;
+    chain = chain.then(function(){
+      var prep = isVideo ? fileToDataUrl(file) : compressImage(file);
+      return prep.then(function(dataUrl){
+        splashFiles.push({ file: file, type: isVideo ? 'video' : 'image', dataUrl: dataUrl });
+        renderSplashThumbs();
+      });
+    });
+  });
+  chain.then(function(){
+    document.getElementById('splash-size-warn').style.display = warnBig ? 'block' : 'none';
+  });
+  document.getElementById('splash-input').value = '';
+}
+
+function renderSplashThumbs(){
+  var wrap = document.getElementById('splash-thumbs');
+  wrap.innerHTML = '';
+  splashFiles.forEach(function(item, idx){
+    var div = document.createElement('div');
+    div.className = 'thumb';
+    var media = item.type === 'video'
+      ? '<video src="' + item.dataUrl + '" muted></video>'
+      : '<img src="' + item.dataUrl + '">';
+    div.innerHTML = media +
+      '<div class="badge">' + (idx + 1) + '</div>' +
+      '<div class="rm" onclick="removeSplash(' + idx + ')">✕</div>';
+    wrap.appendChild(div);
+  });
+}
+function removeSplash(idx){ splashFiles.splice(idx, 1); renderSplashThumbs(); }
+
+function handleAideFiles(fileList){
+  var files = Array.prototype.slice.call(fileList);
+  var chain = Promise.resolve();
+  files.forEach(function(file){
+    if (aideFiles.length >= 4) return;
+    chain = chain.then(function(){
+      return compressImage(file).then(function(dataUrl){
+        aideFiles.push({ file: file, dataUrl: dataUrl });
+        renderAideThumbs();
+      });
+    });
+  });
+  document.getElementById('aide-input').value = '';
+}
+function renderAideThumbs(){
+  var wrap = document.getElementById('aide-thumbs');
+  wrap.innerHTML = '';
+  aideFiles.forEach(function(item, idx){
+    var div = document.createElement('div');
+    div.className = 'thumb';
+    div.innerHTML = '<img src="' + item.dataUrl + '">' +
+      '<div class="rm" onclick="removeAide(' + idx + ')">✕</div>';
+    wrap.appendChild(div);
+  });
+}
+function removeAide(idx){ aideFiles.splice(idx, 1); renderAideThumbs(); }
+
+// ── API GITHUB ──
+function ghHeaders(token){
+  return { 'Authorization': 'token ' + token, 'Accept': 'application/vnd.github+json' };
+}
+
+function ghGetFile(token, owner, repo, path){
+  return fetch('https://api.github.com/repos/' + owner + '/' + repo + '/contents/' + path, { headers: ghHeaders(token) })
+    .then(function(r){ return r.status === 200 ? r.json() : null; })
+    .catch(function(){ return null; });
+}
+
+function ghPutFile(token, owner, repo, path, base64Content, message, sha){
+  var body = { message: message, content: base64Content };
+  if (sha) body.sha = sha;
+  return fetch('https://api.github.com/repos/' + owner + '/' + repo + '/contents/' + path, {
+    method: 'PUT',
+    headers: Object.assign({ 'Content-Type': 'application/json' }, ghHeaders(token)),
+    body: JSON.stringify(body)
+  }).then(function(r){
+    if (!r.ok) return r.json().then(function(err){ throw new Error(err.message || ('HTTP ' + r.status)); });
+    return r.json();
+  });
+}
+
+function testConnection(){
+  var cfg = saveConfig();
+  if (!cfg.token || !cfg.owner || !cfg.repo) { toast('Remplis token, propriétaire et dépôt'); return; }
+  clearTerm();
+  termLine('Verification de l\'acces au depot...', 'i');
+  fetch('https://api.github.com/repos/' + cfg.owner + '/' + cfg.repo, { headers: ghHeaders(cfg.token) })
+    .then(function(r){
+      if (r.status === 200) {
+        setConn(true);
+        termLine('Connexion reussie: ' + cfg.owner + '/' + cfg.repo, 's');
+        toast('Connecte !');
+        loadCurrent();
+      } else if (r.status === 404) {
+        setConn(false);
+        termLine('Depot introuvable ou token sans acces.', 'e');
+      } else if (r.status === 401) {
+        setConn(false);
+        termLine('Token invalide ou expire.', 'e');
+      } else {
+        setConn(false);
+        termLine('Erreur HTTP ' + r.status, 'e');
+      }
+    })
+    .catch(function(e){ setConn(false); termLine('Erreur reseau: ' + e.message, 'e'); });
+}
+
+var isBusy = false;
+
+// ── PUBLICATION (fusionne avec le contenu deja publie, n'ecrase jamais
+//    une session que l'utilisateur n'a pas touchee cette fois-ci) ──
+function publish(){
+  if (isBusy) { toast('Une action est deja en cours, patiente...'); return; }
+  var cfg = saveConfig();
+  if (!cfg.token || !cfg.owner || !cfg.repo) { toast('Connecte GitHub d\'abord'); return; }
+  var message = document.getElementById('aide-message').value.trim();
+  var link = document.getElementById('aide-link').value.trim();
+  var linkPrimary = document.getElementById('app-link-primary').value.trim();
+  var linkBackup = document.getElementById('app-link-backup').value.trim();
+
+  if (!splashFiles.length && !message && !link && !aideFiles.length && !linkPrimary && !linkBackup) {
+    toast('Rien a publier'); return;
+  }
+  isBusy = true;
+
+  var btn = document.getElementById('publish-btn');
+  btn.disabled = true; btn.textContent = '⏳ PUBLICATION EN COURS...';
+  clearTerm();
+  termLine('Recuperation du contenu deja publie...', 'i');
+
+  var ts = Date.now();
+  var pushQueue = [];
+
+  splashFiles.forEach(function(item, i){
+    var ext = item.type === 'video' ? 'mp4' : 'png';
+    pushQueue.push({
+      path: 'media/splash-' + ts + '-' + i + '.' + ext,
+      b64: b64FromDataUrl(item.dataUrl),
+      msg: 'Add splash media ' + i,
+      resultKind: 'splash', type: item.type
+    });
+  });
+  aideFiles.forEach(function(item, i){
+    pushQueue.push({
+      path: 'media/aide-' + ts + '-' + i + '.png',
+      b64: b64FromDataUrl(item.dataUrl),
+      msg: 'Add aide image ' + i,
+      resultKind: 'aide'
+    });
+  });
+
+  var splashUrls = [];
+  var aideUrls = [];
+  var idx = 0;
+
+  function pushNext(){
+    if (idx >= pushQueue.length) return Promise.resolve();
+    var item = pushQueue[idx++];
+    var shortName = item.path.split('/').pop();
+    termLine('  Envoi: ' + shortName, 'i');
+    return ghPutFile(cfg.token, cfg.owner, cfg.repo, item.path, item.b64, item.msg).then(function(res){
+      var rawUrl = 'https://raw.githubusercontent.com/' + cfg.owner + '/' + cfg.repo + '/main/' + item.path;
+      if (item.resultKind === 'splash') splashUrls.push({ type: item.type, url: rawUrl });
+      else aideUrls.push(rawUrl);
+      return pushNext();
+    }).catch(function(e){
+      termLine('  Echec: ' + shortName + ' — ' + e.message, 'e');
+      return pushNext();
+    });
+  }
+
+  var existingSha = null;
+  ghGetFile(cfg.token, cfg.owner, cfg.repo, CONFIG_PATH).then(function(existing){
+    var existingData = { splash_media: [], help_message: '', help_link: '', help_images: [], links: {} };
+    if (existing) {
+      existingSha = existing.sha;
+      try { existingData = JSON.parse(decodeURIComponent(escape(atob(existing.content.replace(/\n/g, ''))))); } catch(e){}
+      existingData.links = existingData.links || {};
+    }
+    termLine('Debut de la publication...', 'i');
+    return pushNext().then(function(){
+      termLine('Mise a jour du fichier de configuration...', 'i');
+      var payload = {
+        // Chaque session ne remplace que sa propre partie ; le reste est preserve tel quel
+        splash_media: splashUrls.length ? splashUrls : existingData.splash_media,
+        help_message: message ? message : existingData.help_message,
+        help_link: link ? link : existingData.help_link,
+        help_images: aideUrls.length ? aideUrls : existingData.help_images,
+        links: {
+          app_primary: linkPrimary ? linkPrimary : existingData.links.app_primary,
+          app_backup: linkBackup ? linkBackup : existingData.links.app_backup
+        },
+        updated_at: new Date().toISOString()
+      };
+      var contentB64 = btoa(unescape(encodeURIComponent(JSON.stringify(payload, null, 2))));
+      return ghPutFile(cfg.token, cfg.owner, cfg.repo, CONFIG_PATH, contentB64, 'Update remote content', existingSha);
+    });
+  }).then(function(){
+    termLine('Publication terminee avec succes !', 's');
+    toast('Publie ! Visible a la prochaine ouverture des apps.');
+    document.getElementById('last-pub').textContent = 'Derniere publication : ' + new Date().toLocaleString('fr-FR');
+    document.getElementById('repo-target').textContent = cfg.owner + '/' + cfg.repo;
+    loadCurrent();
+  }).catch(function(e){
+    termLine('Erreur: ' + e.message, 'e');
+    toast('Erreur lors de la publication');
+  }).finally(function(){
+    btn.disabled = false; btn.textContent = '🚀 PUBLIER MAINTENANT';
+    isBusy = false;
+  });
+}
+
+function clearAll(){
+  var cfg = saveConfig();
+  if (!cfg.token || !cfg.owner || !cfg.repo) { toast('Connecte GitHub d\'abord'); return; }
+  if (!confirm('Retirer tout le contenu actuellement diffuse ? Les apps ne verront plus rien.')) return;
+  clearTerm();
+  termLine('Suppression du contenu diffuse...', 'i');
+  ghGetFile(cfg.token, cfg.owner, cfg.repo, CONFIG_PATH).then(function(existing){
+    var payload = { splash_media: [], help_message: '', help_link: '', help_images: [], links: {}, updated_at: new Date().toISOString() };
+    var contentB64 = btoa(unescape(encodeURIComponent(JSON.stringify(payload, null, 2))));
+    var sha = existing ? existing.sha : null;
+    return ghPutFile(cfg.token, cfg.owner, cfg.repo, CONFIG_PATH, contentB64, 'Clear remote content', sha);
+  }).then(function(){
+    termLine('Contenu retire.', 's');
+    toast('Diffusion videe');
+    ['aide-message','aide-link','app-link-primary','app-link-backup'].forEach(function(id){ document.getElementById(id).value = ''; });
+    loadCurrent();
+  }).catch(function(e){
+    termLine('Erreur: ' + e.message, 'e');
+  });
+}
+
+// ── ETAT ACTUEL ──
+var currentRemoteData = null;
+
+function loadCurrent(){
+  var cfg = saveConfig();
+  if (!cfg.token || !cfg.owner || !cfg.repo) return;
+  var list = document.getElementById('current-list');
+  list.textContent = 'Chargement...';
+  fetch('https://raw.githubusercontent.com/' + cfg.owner + '/' + cfg.repo + '/main/' + CONFIG_PATH + '?t=' + Date.now())
+    .then(function(r){ return r.ok ? r.json() : null; })
+    .then(function(data){
+      currentRemoteData = data || { splash_media: [], help_message: '', help_link: '', help_images: [], links: {} };
+      currentRemoteData.links = currentRemoteData.links || {};
+      // Pre-remplit les champs texte avec ce qui est deja publie (edition naturelle)
+      if (currentRemoteData.help_message) document.getElementById('aide-message').value = currentRemoteData.help_message;
+      if (currentRemoteData.help_link) document.getElementById('aide-link').value = currentRemoteData.help_link;
+      if (currentRemoteData.links.app_primary) document.getElementById('app-link-primary').value = currentRemoteData.links.app_primary;
+      if (currentRemoteData.links.app_backup) document.getElementById('app-link-backup').value = currentRemoteData.links.app_backup;
+      renderCurrentList();
+      if (data && data.updated_at) document.getElementById('last-pub').textContent = 'Derniere publication : ' + new Date(data.updated_at).toLocaleString('fr-FR');
+    })
+    .catch(function(){ list.innerHTML = '<div style="color:var(--red)">Impossible de charger l\'etat actuel.</div>'; });
+}
+
+function renderCurrentList(){
+  var list = document.getElementById('current-list');
+  var data = currentRemoteData;
+  var links = data ? (data.links || {}) : {};
+  var hasAnything = data && ((data.splash_media||[]).length || data.help_message || data.help_link || (data.help_images||[]).length || links.app_primary || links.app_backup);
+  if (!hasAnything) {
+    list.innerHTML = '<div style="opacity:.6">Rien n\'est actuellement diffuse.</div>';
+    return;
+  }
+  var html = '';
+  (data.splash_media || []).forEach(function(m, i){
+    var media = m.type === 'video' ? '<video src="' + m.url + '" muted></video>' : '<img src="' + m.url + '">';
+    html += '<div class="current-item" data-kind="splash" data-idx="' + i + '">' + media +
+      '<div class="txt">Demarrage: ' + m.type + '</div>' +
+      '<div class="del-btn" style="display:none">✕</div></div>';
+  });
+  if (data.help_message) html += '<div class="current-item" data-kind="help_message"><div class="txt">💬 ' + data.help_message + '</div><div class="del-btn" style="display:none">✕</div></div>';
+  if (data.help_link) html += '<div class="current-item" data-kind="help_link"><div class="txt">🔗 ' + data.help_link + '</div><div class="del-btn" style="display:none">✕</div></div>';
+  (data.help_images || []).forEach(function(u, i){
+    html += '<div class="current-item" data-kind="help_image" data-idx="' + i + '"><img src="' + u + '"><div class="txt">Image Aide</div><div class="del-btn" style="display:none">✕</div></div>';
+  });
+  if (links.app_primary) html += '<div class="current-item" data-kind="link_primary"><div class="txt">🌐 Principal: ' + links.app_primary + '</div><div class="del-btn" style="display:none">✕</div></div>';
+  if (links.app_backup) html += '<div class="current-item" data-kind="link_backup"><div class="txt">🌐 Secours: ' + links.app_backup + '</div><div class="del-btn" style="display:none">✕</div></div>';
+  list.innerHTML = html;
+  attachLongPress();
+}
+
+function attachLongPress(){
+  var items = document.querySelectorAll('.current-item');
+  items.forEach(function(el){
+    var timer = null;
+    var start = function(){ timer = setTimeout(function(){ el.querySelector('.del-btn').style.display = 'flex'; }, 500); };
+    var cancel = function(){ if (timer) clearTimeout(timer); };
+    el.addEventListener('touchstart', start);
+    el.addEventListener('touchend', cancel);
+    el.addEventListener('touchmove', cancel);
+    el.addEventListener('mousedown', start);
+    el.addEventListener('mouseup', cancel);
+    el.addEventListener('mouseleave', cancel);
+    var delBtn = el.querySelector('.del-btn');
+    delBtn.addEventListener('click', function(e){
+      e.stopPropagation();
+      deleteRemoteItem(el.dataset.kind, el.dataset.idx !== undefined ? parseInt(el.dataset.idx) : null);
+    });
+  });
+}
+
+function deleteRemoteItem(kind, idx){
+  if (isBusy) { toast('Une action est deja en cours, patiente...'); return; }
+  if (!confirm('Supprimer cet element de la diffusion ?')) return;
+  isBusy = true;
+  currentRemoteData.links = currentRemoteData.links || {};
+  if (kind === 'splash') currentRemoteData.splash_media.splice(idx, 1);
+  else if (kind === 'help_image') currentRemoteData.help_images.splice(idx, 1);
+  else if (kind === 'help_message') { currentRemoteData.help_message = ''; document.getElementById('aide-message').value = ''; }
+  else if (kind === 'help_link') { currentRemoteData.help_link = ''; document.getElementById('aide-link').value = ''; }
+  else if (kind === 'link_primary') { currentRemoteData.links.app_primary = ''; document.getElementById('app-link-primary').value = ''; }
+  else if (kind === 'link_backup') { currentRemoteData.links.app_backup = ''; document.getElementById('app-link-backup').value = ''; }
+
+  var cfg = saveConfig();
+  clearTerm();
+  termLine('Suppression en cours...', 'i');
+  currentRemoteData.updated_at = new Date().toISOString();
+  var contentB64 = btoa(unescape(encodeURIComponent(JSON.stringify(currentRemoteData, null, 2))));
+  ghGetFile(cfg.token, cfg.owner, cfg.repo, CONFIG_PATH).then(function(existing){
+    var sha = existing ? existing.sha : null;
+    return ghPutFile(cfg.token, cfg.owner, cfg.repo, CONFIG_PATH, contentB64, 'Remove item', sha);
+  }).then(function(){
+    termLine('Element supprime.', 's');
+    toast('Supprime');
+    renderCurrentList();
+  }).catch(function(e){
+    termLine('Erreur: ' + e.message, 'e');
+  }).finally(function(){
+    isBusy = false;
+  });
+}
+
+document.getElementById('repo-target').textContent =
+  (document.getElementById('gh-owner').value || '—') + '/' + (document.getElementById('gh-repo').value || '—');
+</script>
+</body>
+</html>
